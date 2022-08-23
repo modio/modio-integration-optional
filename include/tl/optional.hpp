@@ -103,6 +103,13 @@ namespace tl {
 #define TL_OPTIONAL_11_CONSTEXPR constexpr
 #endif
 
+#ifdef TL_OPTIONAL_NO_EXCEPTIONS
+#include <assert.h>
+#define TL_OPTIONAL_THROW(Exception) assert(#Exception); std::abort()
+#else
+#define TL_OPTIONAL_THROW(Exception) throw Exception()
+#endif
+
 namespace tl {
 #ifndef TL_MONOSTATE_INPLACE_MUTEX
 #define TL_MONOSTATE_INPLACE_MUTEX
@@ -1290,24 +1297,25 @@ public:
   TL_OPTIONAL_11_CONSTEXPR T &value() & {
     if (has_value())
       return this->m_value;
-    throw bad_optional_access();
+    TL_OPTIONAL_THROW(bad_optional_access);
   }
   TL_OPTIONAL_11_CONSTEXPR const T &value() const & {
     if (has_value())
       return this->m_value;
-    throw bad_optional_access();
+    TL_OPTIONAL_THROW(bad_optional_access);
   }
   TL_OPTIONAL_11_CONSTEXPR T &&value() && {
     if (has_value())
       return std::move(this->m_value);
-    throw bad_optional_access();
+    TL_OPTIONAL_THROW(bad_optional_access);
   }
 
 #ifndef TL_OPTIONAL_NO_CONSTRR
   TL_OPTIONAL_11_CONSTEXPR const T &&value() const && {
     if (has_value())
       return std::move(this->m_value);
-    throw bad_optional_access();
+    TL_OPTIONAL_THROW(bad_optional_access);
+
   }
 #endif
 
@@ -2013,12 +2021,12 @@ public:
   TL_OPTIONAL_11_CONSTEXPR T &value() {
     if (has_value())
       return *m_value;
-    throw bad_optional_access();
+    TL_OPTIONAL_THROW(bad_optional_access);
   }
   TL_OPTIONAL_11_CONSTEXPR const T &value() const {
     if (has_value())
       return *m_value;
-    throw bad_optional_access();
+    TL_OPTIONAL_THROW(bad_optional_access);
   }
 
   /// Returns the stored value if there is one, otherwise returns `u`
